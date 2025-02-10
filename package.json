@@ -2,14 +2,12 @@
   "name": "backend-generator",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
-    "postinstall": "echo Run \\'npm start\\'. '\nYour app should now be running on localhost:3000.'"
-  },
+  "scripts": {},
   "bin": {
     "start": "index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Tyrone Ward",
   "license": "ISC",
   "description": ""
 }
