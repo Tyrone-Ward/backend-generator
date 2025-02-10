@@ -1,21 +1,27 @@
 Use the application generator tool, backend-generator, to quickly create an application skeleton.
 
-You can run the application generator with the npx command (available in Node.js 8.2.0).
+You can run the application generator with the `npx` command (available in Node.js 8.2.0).
 
-```
+```sh
 npx https://github.com/Tyrone-Ward/backend-generator.git myApp
 ```
 
 Then install dependencies:
 
-```bash
+```sh
 $ cd myapp
 $ npm install
 ```
 
+Start your Express.js app at `http://localhost:3000/`:
+
+```bash
+$ npm start
+```
+
 The generated app has the following directory structure:
 
-```
+```sh
 ├── env.example
 ├── index.js
 ├── package.json
