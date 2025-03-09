@@ -5,43 +5,80 @@ import path from 'path'
 import { exec } from 'child_process'
 import util from 'util'
 import { argv } from 'node:process'
+import { select, Separator } from '@inquirer/prompts'
 
 const execPromise = util.promisify(exec)
 
-async function cloneRepo (folderName, repoUrl) {
-  try {
-    // Create the folder
-    await fs.mkdir(folderName, { recursive: true })
+const answer = await select({
+  message: 'Do you need authentication?',
+  choices: [
+    {
+      name: 'Yes',
+      value: true,
+      description: 'Adds Clerk authentication and user management to your React application.'
+    },
+    {
+      name: 'No',
+      value: false,
+      description: 'Roll your own authentication service.'
+    }
+  ]
+})
+
+function createFolder(folderName) {
+  return fs.mkdir(folderName, { recursive: true }).then(() => {
     console.log(`Folder "${folderName}" created.`)
+    return path.resolve(folderName)
+  })
+}
 
-    // Change the working directory
-    const folderPath = path.resolve(folderName)
-    process.chdir(folderPath)
-    console.log(`Changed working directory to "${folderPath}".`)
+function changeWorkingDirectory(folderPath) {
+  process.chdir(folderPath)
+  console.log(`Changed working directory to "${folderPath}".`)
+  return Promise.resolve(folderPath)
+}
 
-    // Clone the repo
-    await execPromise(`git clone ${repoUrl} .`)
-    console.log(`Repository cloned into "${folderPath}".`)
+function cloneRepository(repoUrl) {
+  return execPromise(`git clone ${repoUrl} .`).then(() => {
+    console.log(`Repository cloned.`)
+  })
+}
 
-    // Modify package.json
-    const packageJsonPath = path.join(folderPath, 'package.json')
-    const packageData = await fs.readFile(packageJsonPath, 'utf8')
-    const packageJson = JSON.parse(packageData)
+function updatePackageJson(folderName, folderPath) {
+  const packageJsonPath = path.join(folderPath, 'package.json')
 
-    // Update the "name" property
-    packageJson.name = folderName.toLowerCase()
+  return fs
+    .readFile(packageJsonPath, 'utf8')
+    .then((data) => {
+      const packageJson = JSON.parse(data)
+      packageJson.name = folderName.toLowerCase()
+      return fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), 'utf8')
+    })
+    .then(() => {
+      console.log(`Updated package.json name to "${folderName.toLowerCase()}".`)
+    })
+}
 
-    // Write back to package.json
-    await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), 'utf8')
-    console.log(`Updated package.json name to "${folderName.toLowerCase()}".`)
-
-    console.log('Run "npm i" to install packages.')
-  } catch (error) {
-    console.error('Error:', error.message)
-  }
+function cloneRepo(folderName, repoUrl) {
+  createFolder(folderName)
+    .then((folderPath) => changeWorkingDirectory(folderPath))
+    .then(() => cloneRepository(repoUrl))
+    .then(() => updatePackageJson(folderName, process.cwd()))
+    .then(() => console.log('Run "npm i" to install packages.'))
+    .catch((error) => console.error('Error:', error.message))
 }
 
 const folderName = argv[2]
 const repoUrl = 'https://github.com/Tyrone-Ward/nodejs-template.git'
 
-cloneRepo(folderName, repoUrl)
+async function cloneRepo(folderName, repoUrl) {
+  try {
+    const folderPath = await createFolder(folderName)
+    await changeWorkingDirectory(folderPath)
+    await cloneRepository(repoUrl)
+    await updatePackageJson(folderName, folderPath)
+    console.log('Run "npm i" to install packages.')
+  } catch (error) {
+    console.error('Error:', error.message)
+  }
+}
