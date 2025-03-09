@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
-const fs = require('fs').promises
-const path = require('path')
-const { exec } = require('child_process')
-const util = require('util')
-const { argv } = require('node:process')
+import fs from 'fs/promises'
+import path from 'path'
+import { exec } from 'child_process'
+import util from 'util'
+import { argv } from 'node:process'
 
 const execPromise = util.promisify(exec)
 
-async function cloneRepo(folderName, repoUrl) {
+async function cloneRepo (folderName, repoUrl) {
   try {
     // Create the folder
     await fs.mkdir(folderName, { recursive: true })
