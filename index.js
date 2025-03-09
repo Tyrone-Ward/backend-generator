@@ -9,22 +9,6 @@ import { select, Separator } from '@inquirer/prompts'
 
 const execPromise = util.promisify(exec)
 
-const answer = await select({
-  message: 'Do you need authentication?',
-  choices: [
-    {
-      name: 'Yes',
-      value: true,
-      description: 'Adds Clerk authentication and user management to your React application.'
-    },
-    {
-      name: 'No',
-      value: false,
-      description: 'Roll your own authentication service.'
-    }
-  ]
-})
-
 function createFolder(folderName) {
   return fs.mkdir(folderName, { recursive: true }).then(() => {
     console.log(`Folder "${folderName}" created.`)
@@ -64,6 +48,21 @@ const repoUrl = 'https://github.com/Tyrone-Ward/nodejs-template.git'
 
 async function cloneRepo(folderName, repoUrl) {
   try {
+    const answer = await select({
+      message: 'Do you need authentication?',
+      choices: [
+        {
+          name: 'Yes',
+          value: true,
+          description: 'Adds Clerk authentication and user management to your React application.'
+        },
+        {
+          name: 'No',
+          value: false,
+          description: 'Roll your own authentication service.'
+        }
+      ]
+    })
     const folderPath = await createFolder(folderName)
     await changeWorkingDirectory(folderPath)
     await cloneRepository(repoUrl)
