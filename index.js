@@ -5,9 +5,25 @@ import path from 'path'
 import { exec } from 'child_process'
 import util from 'util'
 import { argv } from 'node:process'
-import { select, Separator } from '@inquirer/prompts'
+import { select } from '@inquirer/prompts'
 
 const execPromise = util.promisify(exec)
+
+const answer2 = await select({
+  message: 'Do you need authentication?',
+  choices: [
+    {
+      name: 'Yes',
+      value: true,
+      description: 'Adds Clerk authentication and user management to your React application.'
+    },
+    {
+      name: 'No',
+      value: false,
+      description: 'Roll your own authentication service.'
+    }
+  ]
+})
 
 function createFolder(folderName) {
   return fs.mkdir(folderName, { recursive: true }).then(() => {
@@ -48,21 +64,6 @@ const repoUrl = 'https://github.com/Tyrone-Ward/nodejs-template.git'
 
 async function cloneRepo(folderName, repoUrl) {
   try {
-    const answer = await select({
-      message: 'Do you need authentication?',
-      choices: [
-        {
-          name: 'Yes',
-          value: true,
-          description: 'Adds Clerk authentication and user management to your React application.'
-        },
-        {
-          name: 'No',
-          value: false,
-          description: 'Roll your own authentication service.'
-        }
-      ]
-    })
     const folderPath = await createFolder(folderName)
     await changeWorkingDirectory(folderPath)
     await cloneRepository(repoUrl)
@@ -72,3 +73,5 @@ async function cloneRepo(folderName, repoUrl) {
     console.error('Error:', error.message)
   }
 }
+
+cloneRepo(folderName, repoUrl)
