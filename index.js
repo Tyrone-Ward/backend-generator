@@ -59,15 +59,6 @@ function updatePackageJson(folderName, folderPath) {
     })
 }
 
-function cloneRepo(folderName, repoUrl) {
-  createFolder(folderName)
-    .then((folderPath) => changeWorkingDirectory(folderPath))
-    .then(() => cloneRepository(repoUrl))
-    .then(() => updatePackageJson(folderName, process.cwd()))
-    .then(() => console.log('Run "npm i" to install packages.'))
-    .catch((error) => console.error('Error:', error.message))
-}
-
 const folderName = argv[2]
 const repoUrl = 'https://github.com/Tyrone-Ward/nodejs-template.git'
 
