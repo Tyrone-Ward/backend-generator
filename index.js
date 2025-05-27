@@ -129,4 +129,4 @@ async function cloneRepo(folderName, repoUrl) {
   }
 }
 
-// cloneRepo(folderName, repoUrl)
+cloneRepo(folderName, repoUrl)
