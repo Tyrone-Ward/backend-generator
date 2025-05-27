@@ -33,12 +33,12 @@ if (authenticationAnswer) {
     choices: [
       {
         name: 'Clerk',
-        value: '@clerk/backend',
+        value: { '@clerk/backend': '1.33.0' },
         description: 'Adds Clerk authentication and user management to your project.'
       },
       {
         name: 'JSON Web Token',
-        value: 'jsonwebtoken', // jsonwebtoken
+        value: { jsonwebtoken: '^9.0.2' }, // jsonwebtoken
         description: 'JWT Authentication.'
       }
     ]
@@ -50,12 +50,12 @@ const database = await select({
   choices: [
     {
       name: 'SQLite3',
-      value: 'sqlite3',
+      value: { sqlite3: '^5.1.7' },
       description: 'Install asynchronous, non-blocking SQLite3 bindings for Node.js.'
     },
     {
       name: 'MongoDB',
-      value: 'mongodb',
+      value: { mongodb: '^6.16.0' },
       description: 'Install official MongoDB driver for Node.js'
     },
     {
@@ -92,6 +92,7 @@ function updatePackageJson(folderName, folderPath, options) {
     .then((data) => {
       const packageJson = JSON.parse(data)
       packageJson.name = folderName.toLowerCase()
+      Object.values(options).forEach((i) => (packageJson.dependencies[Object.keys(i)[0]] = Object.values(i)[0]))
       return fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), 'utf8')
     })
     .then(() => {
