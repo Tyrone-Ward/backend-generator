@@ -40,6 +40,10 @@ if (authenticationAnswer) {
         name: 'JSON Web Token',
         value: { jsonwebtoken: '^9.0.2' }, // jsonwebtoken
         description: 'JWT Authentication.'
+      },
+      new Separator(),
+      {
+        name: 'No authentication'
       }
     ]
   })
@@ -58,9 +62,9 @@ const database = await select({
       value: { mongodb: '^6.16.0' },
       description: 'Install official MongoDB driver for Node.js'
     },
+    new Separator(),
     {
-      name: 'No database',
-      value: undefined
+      name: 'No database'
     }
   ]
 })
@@ -83,7 +87,6 @@ function cloneRepository(repoUrl) {
     console.log(`Repository cloned.`)
   })
 }
-// TDOD: add dependencies based on user input
 function updatePackageJson(folderName, folderPath, options) {
   const packageJsonPath = path.join(folderPath, 'package.json')
 
@@ -92,7 +95,14 @@ function updatePackageJson(folderName, folderPath, options) {
     .then((data) => {
       const packageJson = JSON.parse(data)
       packageJson.name = folderName.toLowerCase()
-      Object.values(options).forEach((i) => (packageJson.dependencies[Object.keys(i)[0]] = Object.values(i)[0]))
+      // add dependencies based on user input skipping declines
+      for (const i of Object.values(options)) {
+        if (i !== undefined) {
+          const [key] = Object.keys(i)
+          const [value] = Object.values(i)
+          packageJson.dependencies[key] = value
+        }
+      }
       return fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), 'utf8')
     })
     .then(() => {
@@ -119,4 +129,4 @@ async function cloneRepo(folderName, repoUrl) {
   }
 }
 
-cloneRepo(folderName, repoUrl)
+// cloneRepo(folderName, repoUrl)
